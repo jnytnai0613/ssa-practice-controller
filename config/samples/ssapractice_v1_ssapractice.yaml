@@ -1,0 +1,14 @@
+apiVersion: ssapractice.jnytnai0613.github.io/v1
+kind: SSAPractice
+metadata:
+  name: ssapractice-sample
+  namespace: ssa-practice-controller-system
+spec:
+  depSpec:
+    replicas: 3
+    template:
+      spec:
+        containers:
+          - name: nginx
+            image: nginx:1.22.0
+            imagePullPolicy: IfNotPresent

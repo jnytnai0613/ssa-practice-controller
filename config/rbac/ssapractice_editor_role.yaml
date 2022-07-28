@@ -1,0 +1,24 @@
+# permissions for end users to edit ssapractices.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ssapractice-editor-role
+rules:
+- apiGroups:
+  - ssapractice.jnytnai0613.github.io
+  resources:
+  - ssapractices
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ssapractice.jnytnai0613.github.io
+  resources:
+  - ssapractices/status
+  verbs:
+  - get

@@ -1,0 +1,20 @@
+# permissions for end users to view ssapractices.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ssapractice-viewer-role
+rules:
+- apiGroups:
+  - ssapractice.jnytnai0613.github.io
+  resources:
+  - ssapractices
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ssapractice.jnytnai0613.github.io
+  resources:
+  - ssapractices/status
+  verbs:
+  - get
