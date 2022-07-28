@@ -5,10 +5,14 @@ metadata:
   namespace: ssa-practice-controller-system
 spec:
   depSpec:
-    replicas: 3
+    replicas: 5
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 30%
+        maxUnavailable: 30%
     template:
       spec:
         containers:
           - name: nginx
-            image: nginx:1.22.0
-            imagePullPolicy: IfNotPresent
+            image: nginx:latest
