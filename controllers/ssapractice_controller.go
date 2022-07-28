@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/go-logr/logr"
 
@@ -89,8 +90,8 @@ func (r *SSAPracticeReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	var (
 		deploymentClient = kclientset.AppsV1().Deployments("ssa-practice-controller-system")
 		fieldMgr         = "ssapractice-fieldmanager"
-		log              = r.Log.WithValues("ssapractice", req.NamespacedName)
 		labels           = map[string]string{"apps": "ssapractice-nginx"}
+		log              = r.Log.WithValues("ssapractice", req.NamespacedName)
 		podTemplate      *corev1apply.PodTemplateSpecApplyConfiguration
 		ssapractice      ssapracticev1.SSAPractice
 	)
@@ -103,15 +104,47 @@ func (r *SSAPracticeReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		return ctrl.Result{}, err
 	}
 
-	replicas := *ssapractice.Spec.DepSpec.Replicas
 	deploymentApplyConfig := appsv1apply.Deployment("ssapractice-nginx", "ssa-practice-controller-system").
 		WithSpec(appsv1apply.DeploymentSpec().
-			WithReplicas(replicas).
 			WithSelector(metav1apply.LabelSelector().
 				WithMatchLabels(labels)))
 
+	if ssapractice.Spec.DepSpec.Replicas != nil {
+		replicas := *ssapractice.Spec.DepSpec.Replicas
+		deploymentApplyConfig.Spec.WithReplicas(replicas)
+	}
+
+	if ssapractice.Spec.DepSpec.Strategy != nil {
+		types := *ssapractice.Spec.DepSpec.Strategy.Type
+		rollingUpdate := ssapractice.Spec.DepSpec.Strategy.RollingUpdate
+		deploymentApplyConfig.Spec.WithStrategy(appsv1apply.DeploymentStrategy().
+			WithType(types).
+			WithRollingUpdate(rollingUpdate))
+	}
+
+	if ssapractice.Spec.DepSpec.Template == nil {
+		return ctrl.Result{}, fmt.Errorf("Error: %s", "The name or image field is required in the '.Spec.DepSpec.Template.Spec.Containers[]'.")
+	}
+
 	podTemplate = ssapractice.Spec.DepSpec.Template
 	podTemplate.WithLabels(labels)
+	for i, v := range podTemplate.Spec.Containers {
+		if v.Image == nil {
+			var (
+				image  string  = "nginx"
+				pimage *string = &image
+			)
+			podTemplate.Spec.Containers[i].Image = pimage
+		}
+
+		if v.Name == nil {
+			var (
+				s             = strings.Split(*v.Image, ":")
+				pname *string = &s[0]
+			)
+			podTemplate.Spec.Containers[i].Name = pname
+		}
+	}
 	deploymentApplyConfig.Spec.WithTemplate(podTemplate)
 
 	owner, err := createOwnerReferences(ssapractice, r.Scheme, log)
