@@ -8,10 +8,12 @@ deploymentApplyConfig := appsv1apply.Deployment("ssapractice-nginx", "ssa-practi
 	WithSpec(appsv1apply.DeploymentSpec().
 		WithSelector(metav1apply.LabelSelector().
 			WithMatchLabels(labels)))
+
 if ssapractice.Spec.DepSpec.Replicas != nil {
 	replicas := *ssapractice.Spec.DepSpec.Replicas
 	deploymentApplyConfig.Spec.WithReplicas(replicas)
 }
+
 if ssapractice.Spec.DepSpec.Strategy != nil {
 	types := *ssapractice.Spec.DepSpec.Strategy.Type
 	rollingUpdate := ssapractice.Spec.DepSpec.Strategy.RollingUpdate
@@ -19,9 +21,11 @@ if ssapractice.Spec.DepSpec.Strategy != nil {
 		WithType(types).
 		WithRollingUpdate(rollingUpdate))
 }
+
 if ssapractice.Spec.DepSpec.Template == nil {
 	return ctrl.Result{}, fmt.Errorf("Error: %s", "The name or image field is required in the '.Spec.DepSpec.Template.Spec.Containers[]'.")
 }
+
 podTemplate = ssapractice.Spec.DepSpec.Template
 podTemplate.WithLabels(labels)
 for i, v := range podTemplate.Spec.Containers {
@@ -41,6 +45,7 @@ for i, v := range podTemplate.Spec.Containers {
 	}
 }
 deploymentApplyConfig.Spec.WithTemplate(podTemplate)
+
 owner, err := createOwnerReferences(ssapractice, r.Scheme, log)
 if err != nil {
 	log.Error(err, "Unable create OwnerReference")
