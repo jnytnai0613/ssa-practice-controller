@@ -122,12 +122,19 @@ func (r *SSAPracticeReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 			WithRollingUpdate(rollingUpdate))
 	}
 
+	errMsg := "The name or image field is required in the '.Spec.DepSpec.Template.Spec.Containers[]'."
+	podTemplate = ssapractice.Spec.DepSpec.Template
 	if ssapractice.Spec.DepSpec.Template == nil {
-		return ctrl.Result{}, fmt.Errorf("Error: %s", "The name or image field is required in the '.Spec.DepSpec.Template.Spec.Containers[]'.")
+		return ctrl.Result{}, fmt.Errorf("Error: %s", errMsg)
+	}
+	for _, v := range podTemplate.Spec.Containers {
+		if v.Name == nil && v.Image == nil {
+			return ctrl.Result{}, fmt.Errorf("Error: %s", errMsg)
+		}
 	}
 
-	podTemplate = ssapractice.Spec.DepSpec.Template
 	podTemplate.WithLabels(labels)
+
 	for i, v := range podTemplate.Spec.Containers {
 		if v.Image == nil {
 			var (
