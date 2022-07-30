@@ -124,9 +124,6 @@ func (r *SSAPracticeReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 
 	errMsg := "The name or image field is required in the '.Spec.DepSpec.Template.Spec.Containers[]'."
 	podTemplate = ssapractice.Spec.DepSpec.Template
-	if ssapractice.Spec.DepSpec.Template == nil {
-		return ctrl.Result{}, fmt.Errorf("Error: %s", errMsg)
-	}
 	for _, v := range podTemplate.Spec.Containers {
 		if v.Name == nil && v.Image == nil {
 			return ctrl.Result{}, fmt.Errorf("Error: %s", errMsg)
