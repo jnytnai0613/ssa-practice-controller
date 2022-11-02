@@ -11,6 +11,5 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v3
-      # test
-      - run: apt install gcc
+      - run: sudo apt install gcc
       - run: make test
