@@ -38,6 +38,8 @@ import (
 	//+kubebuilder:scaffold:imports
 )
 
+// test
+
 var (
 	scheme   = runtime.NewScheme()
 	setupLog = ctrl.Log.WithName("setup")
