@@ -19,7 +19,6 @@ package controllers
 import (
 	"path/filepath"
 	"testing"
-	"fmt"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
