@@ -19,6 +19,7 @@ package controllers
 import (
 	"path/filepath"
 	"testing"
+	"fmt"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -61,6 +62,7 @@ var _ = BeforeSuite(func() {
 	var err error
 	// cfg is defined in this file globally.
 	cfg, err = testEnv.Start()
+	fmt.Print("start test")
 	Expect(err).NotTo(HaveOccurred())
 	Expect(cfg).NotTo(BeNil())
 
